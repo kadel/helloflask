@@ -1,8 +1,9 @@
 FROM python:3-alpine
 
-ADD . /app
 
+ADD ./requirments.txt /app/
 RUN ["pip", "install", "-r", "/app/requirments.txt"]
 
+ADD . /app
 CMD ["python3", "/app/run.py"]
 

@@ -4,7 +4,7 @@ import os
 import flask
 
 app = flask.Flask(__name__)
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False
 
 @app.route('/')
 def index():
