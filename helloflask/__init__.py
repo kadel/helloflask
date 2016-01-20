@@ -2,10 +2,16 @@
 import os
 
 import flask
+import redis
+import os
 
 app = flask.Flask(__name__)
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
+
 
 @app.route('/')
 def index():
-    return flask.render_template('index.html')
+
+    r = redis.StrictRedis(host=os.getenv('REDIS_HOST', 'localhost'), port=os.getenv('REDIS_PORT', 6379), db=0)
+    counter = r.incr('counter')
+    return flask.render_template('index.html', counter=counter)
