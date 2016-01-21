@@ -12,6 +12,22 @@ app.config['DEBUG'] = False
 @app.route('/')
 def index():
 
-    r = redis.StrictRedis(host=os.getenv('REDIS_HOST', 'localhost'), port=os.getenv('REDIS_PORT', 6379), db=0)
-    counter = r.incr('counter')
-    return flask.render_template('index.html', counter=counter)
+    redis_master_host = os.getenv('REDIS_MASTER_PORT_6379_TCP_ADDR')
+    redis_master_port = os.getenv('REDIS_MASTER_PORT_6379_TCP_PORT')
+
+    redis_slave_host = os.getenv('REDIS_SLAVE_PORT_6379_TCP_ADDR')
+    redis_slave_port = os.getenv('REDIS_SLAVE_PORT_6379_TCP_PORT')
+
+    r_master = redis.StrictRedis(host=redis_master_host, port=redis_master_port, db=0)
+
+    counter_master = r_master.incr('counter')
+
+    # connect to slave only if slave was configured
+    if redis_slave_host and redis_slave_port:
+        r_slave = redis.StrictRedis(host=redis_slave_host, port=redis_slave_port, db=0)
+        counter_slave = r.get('counter')
+    else:
+        counter_slave = None
+
+
+    return flask.render_template('index.html', counter_master=counter_master,counter_slave=counter_slave)
